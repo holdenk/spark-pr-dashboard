@@ -72,20 +72,11 @@ class Issue(ndb.Model):
 
     _components = [
         # (name, pr_title_regex, filename_regex)
-        ("Core", "core", "^core/"),
-        ("Scheduler", "schedul", "scheduler"),
+        ("Core", "model", "^model/"),
         ("Python", "python|pyspark", "python"),
-        ("YARN", "yarn", "yarn"),
-        ("Mesos", "mesos", "mesos"),
-        ("Web UI", "webui|(web ui)", "spark/ui/"),
-        ("Build", "build", "(pom\.xml)|project"),
-        ("Docs", "docs", "docs|README"),
-        ("EC2", "ec2", "ec2"),
-        ("SQL", "sql", "sql"),
-        ("MLlib", "mllib|ml", "mllib|/ml/|docs/ml"),
-        ("GraphX", "graphx|pregel", "graphx"),
-        ("Streaming", "stream|flume|kafka|twitter|zeromq", "streaming"),
-        ("R", "SparkR", "(^r/)|src/main/r/|api/r/"),
+        ("GO", "go", "go"),
+        ("Runners", "runners", "runners"),
+        ("Flink", "flink", "flink")
     ]
 
     @property

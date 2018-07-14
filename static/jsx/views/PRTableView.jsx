@@ -23,7 +23,7 @@ define([
 
     var JIRALink = React.createClass({
       render: function() {
-        var link = "http://issues.apache.org/jira/browse/SPARK-" + this.props.number;
+        var link = "http://issues.apache.org/jira/browse/BEAM-" + this.props.number;
         var className = "jira-link";
         if (this.props.isClosed) {
           className += " label label-pill label-danger";
@@ -143,7 +143,7 @@ define([
           <i className="glyphicon glyphicon-ok"></i> :
           <i className="glyphicon glyphicon-remove"></i>);
 
-        var pullLink = "https://github.com/apache/spark/pull/" + pr.number;
+        var pullLink = "https://github.com/apache/beam/pull/" + pr.number;
 
         var jenkinsOutcome = jenkinsOutcomes[pr.last_jenkins_outcome];
         var iconClass = "glyphicon glyphicon-" + jenkinsOutcome.iconName;
