@@ -129,11 +129,13 @@ def update_pr(pr_number):
         parse_datetime(pr.pr_json['updated_at']).astimezone(tz.tzutc()).replace(tzinfo=None)
 
     for issue_number in pr.parsed_title['jiras']:
-        try:
-            link_issue_to_pr("%s-%s" % (app.config['JIRA_PROJECT'], issue_number), pr)
-        except Exception as e:
-            logging.exception("Exception when linking to JIRA issue %s-%s: %s" %
-                              (app.config['JIRA_PROJECT'], issue_number, e))
+        if app.config['LINK_ISSUES']:
+            try:
+                link_issue_to_pr("%s-%s" % (app.config['JIRA_PROJECT'], issue_number), pr)
+            except Exception as e:
+                logging.exception("Exception when linking to JIRA issue %s-%s: %s" %
+                                  (app.config['JIRA_PROJECT'], issue_number, e))
+
         try:
             start_issue_progress("%s-%s" % (app.config['JIRA_PROJECT'], issue_number))
         except Exception as e:

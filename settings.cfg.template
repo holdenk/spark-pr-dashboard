@@ -97,3 +97,5 @@ COMMITTER_GITHUB_USERNAMES = [
     "yhuai",
     "zsxwing",
 ]
+
+LINK_ISSUE=True
