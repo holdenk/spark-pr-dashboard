@@ -22,7 +22,7 @@ def github_request(resource, oauth_token=None, etag=None):
     return raw_github_request(BASE_URL + resource, oauth_token, etag)
 
 
-def raw_github_request(url, oauth_token=None, etag=None, method="GET"):
+def raw_github_request(url, oauth_token=None, etag=None, method="GET", attempt=0):
     headers = {}
     if etag is not None:
         headers['If-None-Match'] = etag
@@ -38,6 +38,18 @@ def raw_github_request(url, oauth_token=None, etag=None, method="GET"):
         return response
     elif response.status_code == 404:
         raise HTTPError(url, response.status_code, "404 Not Found", response.headers, None)
+    # Temporary work around for API rate limit being exceeded. Most likely to encounter during back fills.
+    elif response.status_code == 403 and "rate limit" in response.content:
+        if attempt == 0 and method == "GET":
+            # If we're just doing a GET request, try and do it without being authed after 4 minutes
+            time.sleep(4 * 60)
+            return raw_github_request(url, None, etag, method, attempt + 1)
+        elif attempt == 0:
+            # If we're just doing another request, wait 9 minutes and see if it works
+            time.sleep(9 * 60)
+            return raw_github_request(url, oauth_token, etag, method, attempt + 1)
+        else:
+            raise Exception("Rate limit execeed %s", response.content)
     else:
         raise Exception("Unexpected status code: %i\n%s" % (response.status_code, response.content))
 
