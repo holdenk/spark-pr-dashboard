@@ -23,7 +23,7 @@ define([
 
     var JIRALink = React.createClass({displayName: "JIRALink",
       render: function() {
-        var link = "http://issues.apache.org/jira/browse/SPARK-" + this.props.number;
+        var link = "http://issues.apache.org/jira/browse/AIRFLOW-" + this.props.number;
         var className = "jira-link";
         if (this.props.isClosed) {
           className += " label label-pill label-danger";
@@ -143,7 +143,7 @@ define([
           React.createElement("i", {className: "glyphicon glyphicon-ok"}) :
           React.createElement("i", {className: "glyphicon glyphicon-remove"}));
 
-        var pullLink = "https://github.com/apache/spark/pull/" + pr.number;
+        var pullLink = "https://github.com/apache/airflow/pull/" + pr.number;
 
         var jenkinsOutcome = jenkinsOutcomes[pr.last_jenkins_outcome];
         var iconClass = "glyphicon glyphicon-" + jenkinsOutcome.iconName;
