@@ -32,6 +32,10 @@ def raw_github_request(url, oauth_token=None, etag=None, method="GET",
         headers["Authorization"] = "token %s" % oauth_token
     logging.info("Requesting %s from GitHub with headers %s" % (url, headers))
     response = urlfetch.fetch(url, headers=headers, method=method)
+    # If we're authenticated and running low on requests try and proactively back-off a little
+    if 'X-RateLimit-Limit' in response.headers:
+        if oauth_token is not None and int(response.headers['X-RateLimit-Limit']) < 1000:
+            time.sleep(60)
     if response.status_code == 304:
         return None
     elif method.lower() == "delete":
