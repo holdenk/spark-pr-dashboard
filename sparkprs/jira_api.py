@@ -47,6 +47,10 @@ def start_issue_progress(issue):
         # Passing transition by name doesn't work, though it should according to the docs...
         jira_client.transition_issue(issue=issue, transition=transition_id)
         logging.info("Started progress on JIRA issue {j}.".format(j=issue))
+    except IndexError as e:
+        logging.error(("Could not update JIRA issue {j} "
+                       "probably do not have sufficient permissions {e}"
+                       ).format(j=issue, e=e))
     finally:
         # Restore the original assignee.
         jira_client.assign_issue(issue=issue, assignee=assignee)
