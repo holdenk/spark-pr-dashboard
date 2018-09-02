@@ -23,7 +23,7 @@ define([
 
     var JIRALink = React.createClass({
       render: function() {
-        var link = "http://issues.apache.org/jira/browse/Airflow-" + this.props.number;
+        var link = "http://issues.apache.org/jira/browse/AIRFLOW-" + this.props.number;
         var className = "jira-link";
         if (this.props.isClosed) {
           className += " label label-pill label-danger";
