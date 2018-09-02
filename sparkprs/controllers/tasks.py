@@ -131,15 +131,15 @@ def update_pr(pr_number):
     for issue_number in pr.parsed_title['jiras']:
         try:
             link_issue_to_pr("%s-%s" % (app.config['JIRA_PROJECT'], issue_number), pr)
-        except:
-            logging.exception("Exception when linking to JIRA issue %s-%s" %
-                              (app.config['JIRA_PROJECT'], issue_number))
+        except Exception as e:
+            logging.exception("Exception when linking to JIRA issue %s-%s: %s" %
+                              (app.config['JIRA_PROJECT'], issue_number, e))
         try:
             start_issue_progress("%s-%s" % (app.config['JIRA_PROJECT'], issue_number))
-        except:
+        except Exception as e:
             logging.exception(
-                "Exception when starting progress on JIRA issue %s-%s" %
-                (app.config['JIRA_PROJECT'], issue_number))
+                "Exception when starting progress on JIRA issue %s-%s: %s" %
+                (app.config['JIRA_PROJECT'], issue_number, e))
 
     pr.put()  # Write our modifications back to the database
 

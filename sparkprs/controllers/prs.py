@@ -85,8 +85,8 @@ def search_prs(prs):
                 if target_versions:
                     d['jira_target_versions'] = natsorted(target_versions)
             json_dicts.append(d)
-        except:
-            logging.error("Exception while processing PR #%i", pr.number)
+        except Exception as e:
+            logging.error("Exception while processing PR #%i %s", pr.number, e)
             raise
     response = Response(json.dumps(json_dicts), mimetype='application/json')
     return response
