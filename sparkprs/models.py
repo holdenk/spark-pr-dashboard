@@ -73,7 +73,8 @@ class Issue(ndb.Model):
     _components = [
         # (name, pr_title_regex, filename_regex)
         ("Everything", ".", "."),
-        ("Executors", "executor|kubernetes|k8s", "^airflow/(executors|contrib/executors|contrib/kubernetes)"),
+        ("Executors", "executor|kubernetes|k8s",
+         "^airflow/(executors|contrib/executors|contrib/kubernetes)"),
         ("DAG", "DAG", "^airflow/(dag/|lineage/)"),
         ("API", "API", "^airflow/api/"),
         ("Security", "security|auth", "^airflow/(auth|contrib/auth|security)"),
