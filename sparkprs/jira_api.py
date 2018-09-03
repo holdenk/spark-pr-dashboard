@@ -24,6 +24,9 @@ def start_issue_progress(issue):
 
     This will only happen if the issue's initial state is "Open" or "Reopened".
     """
+    if issue < app.config['JIRA_WATERMARK']:
+        logging.info("Skipping issue {i} since before watermark.")
+        return
     jira_client = get_jira_client()
     issue_info = jira_client.issue(issue)
     status = issue_info.fields.status.name
@@ -62,6 +65,13 @@ def link_issue_to_pr(issue, pr):
 
     This method is idempotent; the links will only be created if they do not already exist.
     """
+    if issue < app.config['JIRA_WATERMARK']:
+        logging.info("Skipping linking issue {i} since before watermark.")
+        return
+    if not app.config['UPDATE_ISSUES']:
+        logging.info("Not linking issues due to system wide setting.")
+        return
+
     jira_client = get_jira_client()
     url = pr.pr_json['html_url']
     title = "[Github] Pull Request #%s (%s)" % (pr.number, pr.user)
