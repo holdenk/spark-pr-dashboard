@@ -102,3 +102,4 @@ LINK_ISSUES=True
 UPDATE_ISSUES=True
 # If you're starting in an existing project and only want to impact new issues
 JIRA_WATERMARK=0
+GH_UPDATE_JIRA_WATERMARK=0
