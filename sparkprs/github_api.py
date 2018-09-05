@@ -32,6 +32,10 @@ def raw_github_request(url, oauth_token=None, etag=None, method="GET",
         headers["Authorization"] = "token %s" % oauth_token
     logging.info("Requesting %s from GitHub with headers %s" % (url, headers))
     response = urlfetch.fetch(url, headers=headers, method=method)
+    # If we're authenticated and running low on requests try and proactively back-off a little
+    if 'X-RateLimit-Limit' in response.headers:
+        if oauth_token is not None and int(response.headers['X-RateLimit-Limit']) < 1000:
+            time.sleep(60)
     if response.status_code == 304:
         return None
     elif method.lower() == "delete":
@@ -42,22 +46,19 @@ def raw_github_request(url, oauth_token=None, etag=None, method="GET",
         raise HTTPError(url, response.status_code, "404 Not Found", response.headers, None)
     # Temporary work around for API rate limit being exceeded. Most likely to encounter during back fills.
     elif response.status_code == 403 and "rate limit" in response.content:
-        try:
-            if retry and method == "GET" and not auth_required:
-                # If we're just doing a GET request, try and do it without being authed after 4 minutes
-                time.sleep(9 * 60)
-                try:
-                    return raw_github_request(url, None, etag, method, auth_required, retry=False)
-                except Exception as e:
-                    return raw_github_request(url, oauth_token, etag, method, auth_required, retry=False)
-            elif retry:
-                # If we're just doing another request, wait 9 minutes and see if it works
-                time.sleep(9 * 60)
+        if retry and method == "GET" and not auth_required:
+            # If we're just doing a GET request, try and do it without being authed after 4 minutes
+            time.sleep(9 * 60)
+            try:
+                return raw_github_request(url, None, etag, method, auth_required, retry=False)
+            except Exception as e:
                 return raw_github_request(url, oauth_token, etag, method, auth_required, retry=False)
-            else:
-                raise Exception("Rate limit execeed %s", response.content)
-        except Exception as e:
-            raise Exception("Exception %s encountered while retrying rate limit %s", response.content)
+        elif retry:
+            # If we're just doing another request, wait 9 minutes and see if it works
+            time.sleep(9 * 60)
+            return raw_github_request(url, oauth_token, etag, method, auth_required, retry=False)
+        else:
+            raise Exception("Rate limit execeed %s", response.content)
     else:
         raise Exception("Unexpected status code: %i\n%s" % (response.status_code, response.content))
 
