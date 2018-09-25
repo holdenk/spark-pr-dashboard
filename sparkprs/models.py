@@ -146,12 +146,32 @@ class Issue(ndb.Model):
             self.put()
         return self.cached_commenters
 
+    def _compute_outcome(self):
+        def process_status(status_obj):
+            if "state" in status_obj:
+                if status_obj["state"] == "success":
+                    return "Pass"
+                elif status_obj["state"] == "pending":
+                    return "Running"
+                elif satus_object == "failure":
+                    return "Fail"
+                else:
+                    return "Unknown"
+        if "statuses_url" in self.pr_json:
+            status_url = self.pr_json["statuses_url"]
+            statuses = json.loads(urlfetch.fetch(status_url).content)
+            if len(statuses) > 0:
+                process_status(statuses[0])
+            else:
+                return None
+        else:
+            return None
+
     @property
     def last_jenkins_outcome(self):
         if self.cached_last_jenkins_outcome is None:
-            (outcome, comment) = compute_last_jenkins_outcome(self.comments_json)
-            self.cached_last_jenkins_outcome = outcome
-            self.last_jenkins_comment = comment
+            self.cached_last_jenkins_outcome = self._compute_outcome()
+            self.last_jenkins_comment = ""
             self.put()
         return self.cached_last_jenkins_outcome
 
