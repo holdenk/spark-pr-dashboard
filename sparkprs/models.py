@@ -6,6 +6,7 @@ import logging
 import re
 from sparkprs import app
 from sparkprs.utils import parse_pr_title, is_jenkins_command, compute_last_jenkins_outcome
+from sparkprs.github_api import raw_github_request
 
 
 class KVS(ndb.Model):
@@ -159,7 +160,12 @@ class Issue(ndb.Model):
                     return "Unknown"
         if "statuses_url" in self.pr_json:
             status_url = self.pr_json["statuses_url"]
-            statuses = json.loads(urlfetch.fetch(status_url).content)
+            result = raw_github_request(
+                status_url,
+                oauth_token=app.config['GITHUB_OAUTH_KEY'])
+            statuses = json.loads(result.content)
+            logging.debug(("Fetched status {result} for {self}"
+                           ).format(result=result, self=self))
             if len(statuses) > 0:
                 process_status(statuses[0])
             else:
