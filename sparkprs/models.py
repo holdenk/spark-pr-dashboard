@@ -154,7 +154,7 @@ class Issue(ndb.Model):
                     return "Pass"
                 elif status_obj["state"] == "pending":
                     return "Running"
-                elif satus_obj["state"] == "failure":
+                elif status_obj["state"] == "failure":
                     return "Fail"
                 else:
                     return "Unknown"
@@ -176,7 +176,11 @@ class Issue(ndb.Model):
     @property
     def last_jenkins_outcome(self):
         if self.cached_last_jenkins_outcome is None:
-            self.cached_last_jenkins_outcome = self._compute_outcome()
+            try:
+                self.cached_last_jenkins_outcome = self._compute_outcome()
+            except Exception as e:
+                logging.error("Error {e} computing CI status.".format(e))
+                self.cached_last_jenkins_outcome = "Unknown"
             self.last_jenkins_comment = ""
             self.put()
         return self.cached_last_jenkins_outcome
