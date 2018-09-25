@@ -43,13 +43,17 @@ def start_issue_progress(issue):
     try:
         # The PR dashboard user needs the issue assigned to itself in order to change
         # the issue's state.
-        jira_client.assign_issue(notify=False, issue=issue, assignee=app.config['JIRA_USERNAME'])
+        # Attempt to skip notification, we require admin status to do this so fall back
+        try:
+            issue_info.update(notify=False, assignee=app.config['JIRA_USERNAME'])
+        except:
+            jira_client.assign_issue(issue=issue, assignee=app.config['JIRA_USERNAME'])
         jira_transitions = jira_client.transitions(issue)
         transition_id = [transition['id']
                          for transition in jira_transitions
                          if transition['name'] == 'Start Progress'][0]
         # Passing transition by name doesn't work, though it should according to the docs...
-        jira_client.transition_issue(notify=False, issue=issue, transition=transition_id)
+        jira_client.transition_issue(issue=issue, transition=transition_id)
         logging.info("Started progress on JIRA issue {j}.".format(j=issue))
     except IndexError as e:
         logging.error(("Could not update JIRA issue {j} "
@@ -58,8 +62,12 @@ def start_issue_progress(issue):
                        ).format(j=issue, e=e, transitions=transitions))
     finally:
         # Restore the original assignee.
-        jira_client.assign_issue(issue=issue, assignee=assignee)
-
+        #jira_client.assign_issue(issue=issue, assignee=assignee)
+        # Attempt to skip notification, we require admin status to do this so fall back
+        try:
+            issue_info.update(notify=False, assignee=assignee)
+        except:
+            jira_client.assign_issue(issue=issue, assignee=assignee)
 
 def link_issue_to_pr(issue, pr):
     """
