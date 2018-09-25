@@ -165,13 +165,13 @@ class Issue(ndb.Model):
                 oauth_token=app.config['GITHUB_OAUTH_KEY'])
             statuses = json.loads(result.content)
             logging.debug(("Fetched status {result} for {self}"
-                           ).format(result=result, self=self))
+                           ).format(result=result.content, self=self))
             if len(statuses) > 0:
                 process_status(statuses[0])
             else:
-                return None
+                return "Unknown"
         else:
-            return None
+            return "Unknown"
 
     @property
     def last_jenkins_outcome(self):
@@ -179,7 +179,7 @@ class Issue(ndb.Model):
             try:
                 self.cached_last_jenkins_outcome = self._compute_outcome()
             except Exception as e:
-                logging.error("Error {e} computing CI status.".format(e))
+                logging.error("Error {e} computing CI status.".format(e=e))
                 self.cached_last_jenkins_outcome = "Unknown"
             self.last_jenkins_comment = ""
             self.put()
