@@ -28,11 +28,9 @@ def start_issue_progress(issue):
         logging.info("Skipping issue {i} since before watermark.")
         return
     jira_client = get_jira_client()
-    issue_info = jira_client.issue(issue)
+    issue_info = jira_client.issue(issue, fields='status,assignee')
     status = issue_info.fields.status.name
     assignee = issue_info.fields.assignee.name if issue_info.fields.assignee else None
-    worklogs = issue_info.fields.worklogs
-    worklogs_update_authors = map(lambda worklog: worklog.updateAuthor, worklogs)
 
     if status == "In Progress":
         return
@@ -40,11 +38,6 @@ def start_issue_progress(issue):
         logging.warn(("Could not start progress on JIRA issue {j}. "
                       "It's currently in an '{s}' state. "
                       "Issues must be in an 'Open' or 'Reopened' state.").format(j=issue, s=status))
-        return
-    elif config["JIRA_USERNAME"] in worklogs_update_authors:
-        logging.warn(("Asked up to update JIRA issue {j}."
-                     "But we have already touched the issue {worklogs}").format(
-                         j=issue, worklogs=worklogs))
         return
 
     try:
