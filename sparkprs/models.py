@@ -167,7 +167,10 @@ class Issue(ndb.Model):
             logging.debug(("Fetched status {result} for {self}"
                            ).format(result=result.content, self=self))
             if len(statuses) > 0:
-                process_status(statuses[0])
+                result_status = process_status(statuses[0])
+                logging.debug(("Resulting status {result_status}"
+                               ).format(result_status=result_status))
+                return result_status
             else:
                 return "Unknown"
         else:
