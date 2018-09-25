@@ -138,7 +138,9 @@ def update_pr(pr_number):
 
         if app.config['UPDATE_ISSUES'] and pr_number > app.config['GH_UPDATE_JIRA_WATERMARK']:
             try:
-                start_issue_progress("%s-%s" % (app.config['JIRA_PROJECT'], issue_number))
+                if not pr.start_attempt:
+                    pr.start_attempt = True
+                    start_issue_progress("%s-%s" % (app.config['JIRA_PROJECT'], issue_number))
             except Exception as e:
                 logging.exception(
                     "Exception when starting progress on JIRA issue %s-%s: %s" %

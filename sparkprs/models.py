@@ -51,6 +51,7 @@ class Issue(ndb.Model):
     user = ndb.StringProperty()
     state = ndb.StringProperty()
     title = ndb.StringProperty()
+    start_attempt = ndb.BooleanProperty(default=False)
     # Raw JSON data
     pr_json = ndb.JsonProperty()
     comments_json = ndb.JsonProperty(compressed=True)
