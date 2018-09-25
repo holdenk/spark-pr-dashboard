@@ -154,7 +154,7 @@ class Issue(ndb.Model):
                     return "Pass"
                 elif status_obj["state"] == "pending":
                     return "Running"
-                elif satus_object == "failure":
+                elif satus_obj["state"] == "failure":
                     return "Fail"
                 else:
                     return "Unknown"
