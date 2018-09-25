@@ -190,7 +190,7 @@ class Issue(ndb.Model):
 
     def _compute_commenters(self):
         res = defaultdict(dict)  # Indexed by user, since we only display each user once.
-        excluded_users = set(("SparkQA", "AmplabJenkins"))
+        excluded_users = set(("SparkQA", "AmplabJenkins", "codecov-io"))
         all_comments = sorted((self.comments_json or []) + (self.pr_comments_json or []),
                               key=lambda c: c['created_at'])
         for comment in all_comments:
